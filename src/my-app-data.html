@@ -1,0 +1,113 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module id="my-app-data">
+    <script>
+        var instances = [];
+        class MyAppData extends Polymer.Element {
+            static get is() {
+                return 'my-app-data';
+            }
+
+            static get properties() {
+                return {
+                    data: {
+                        type: Object,
+                        value: '',
+                        notify: true,
+                        readonly: false,
+                        observer: '_data_changed'
+                    },
+                    key: String
+
+                };
+
+            }
+
+            created() {
+                key = this.getAttribute('key');
+                if (!key) {
+                    console.log(this);
+                    throw('app-data element requires key');
+                }
+                instances.push({key: key, instance: this});
+            }
+
+            detached() {
+                key = this.getAttribute('key');
+                var i = instances.indexOf({key: key, instance: this});
+                if (i >= 0) {
+                    instances.splice(i, 1);
+                }
+            }
+
+            _data_changed(newvalue, oldvalue) {
+                key = this.getAttribute('key');
+                if (!key) {
+                    throw('_data_changed: app-data element requires key');
+                }
+                this.set(key, newvalue);
+
+                // notify the instances with the correct key
+                for (var i = 0; i < instances.length; i++) {
+                    if (instances[i].key == key) {
+                        instances[i].instance.notifyPath('data', newvalue);
+                    }
+                }
+            }
+
+        }
+
+        window.customElements.define(MyAppData.is, MyAppData);
+        //        (function() {
+        //            var instances = [];
+        //            var vars = Object.create(Polymer.Base);
+        //
+        //            Polymer({
+        //                is: 'my-app-data',
+        //
+        //                properties: {
+        //                    data: {
+        //                        type: Object,
+        //                        value: '',
+        //                        notify: true,
+        //                        readonly: false,
+        //                        observer: '_data_changed'
+        //                    },
+        //                    key: String
+        //                },
+        //
+        //                created: function() {
+        //                    key = this.getAttribute('key');
+        //                    if (!key) {
+        //                        console.log(this);
+        //                        throw('app-data element requires key');
+        //                    }
+        //                    instances.push({key:key, instance:this});
+        //                },
+        //
+        //                detached: function() {
+        //                    key = this.getAttribute('key');
+        //                    var i = instances.indexOf({key:key, instance:this});
+        //                    if (i >= 0) {
+        //                        instances.splice(i, 1);
+        //                    }
+        //                },
+        //
+        //                _data_changed: function(newvalue, oldvalue) {
+        //                    key = this.getAttribute('key');
+        //                    if (!key) {
+        //                        throw('_data_changed: app-data element requires key');
+        //                    }
+        //                    vars.set(key, newvalue);
+        //
+        //                    // notify the instances with the correct key
+        //                    for (var i = 0; i < instances.length; i++) {
+        //                        if (instances[i].key == key) {
+        //                            instances[i].instance.notifyPath('data', newvalue);
+        //                        }
+        //                    }
+        //                }
+        //            });
+        //        }());
+    </script>
+</dom-module>
