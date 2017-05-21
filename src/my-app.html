@@ -18,6 +18,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/app-route/app-location.html">
 <link rel="import" href="../bower_components/app-route/app-route.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 
@@ -39,7 +40,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       :host {
         --app-primary-color: #4285f4;
         --app-secondary-color: black;
-
+        --app-drawer-width: 150px;
         display: block;
       }
 
@@ -73,6 +74,76 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         font-weight: bold;
       }
     </style>
+    <style include="shared-styles"></style>
+    <style>
+      iron-icon {
+        margin-right: 33px;
+        opacity: 0.54;
+      }
+
+      .iron-selected {
+        color: var(--default-primary-color);
+      }
+
+      a {
+        text-decoration: none;
+        color: var(--menu-link-color);
+        display: -ms-flexbox;
+        display: -webkit-flex;
+        display: flex;
+        -ms-flex-direction: row;
+        -webkit-flex-direction: row;
+        flex-direction: row;
+        -ms-flex-align: center;
+        -webkit-align-items: center;
+        align-items: center;
+        font-family: 'Roboto', 'Noto', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 24px;
+        min-height: 48px;
+        padding: 0 16px;
+        width: 255px;
+        white-space: nowrap;
+        box-sizing: border-box;
+      }
+
+      a[hide] {
+        display: none;
+      }
+
+      paper-submenu paper-item {
+        font-size: 14px;
+        cursor: pointer;
+        outline: none;
+        white-space: nowrap;
+        width: 255px;
+        box-sizing: border-box;
+        @apply(--layout);
+        @apply(--layout-horizontal);
+      }
+
+      .arow-down {
+        margin-right: 0;
+      }
+
+      paper-submenu paper-menu {
+        background: var(--drawer-submenu-background);
+        padding: 0;
+        height: 0;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-in-out;
+      }
+
+      paper-submenu .submenu-expanded + paper-menu {
+        height: auto;
+        max-height: 300px;
+      }
+    </style>
+
 
     <iron-localstorage name="user-storage" value="{{storedUser}}"></iron-localstorage>
     <app-data key="userData" data="{{storedUser}}"></app-data>
@@ -86,23 +157,31 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <app-drawer-layout fullbleed>
       <!-- Drawer content -->
-      <app-drawer id="drawer" slot="drawer">
+      <app-drawer id="drawer" slot="drawer">  <!--align="end"-->
         <app-toolbar>Menu</app-toolbar>
         <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
+          <iron-icon icon="account-box"></iron-icon>
+          <paper-icon-button icon="delete"></paper-icon-button>
           <a name="register-login" href="register-login">home</a>
           <a name="home-quotes" href="home-quotes" >home-quotes</a>
-          <a name="secret-quotes" href="secret-quotes" hidden$="[[!storedUser.loggedin]]">secret-quotes</a>
+          <div hidden$="[[!storedUser.loggedin]]"><a name="secret-quotes" href="secret-quotes"
+                                                     hidden$="[[!storedUser.loggedin]]">secret-quotes</a></div>
+          <!--<a name="secret-quotes" href="secret-quotes" hidden="true" >secret-quotes</a>-->
         </iron-selector>
       </app-drawer>
+
 
       <!-- Main content -->
       <app-header-layout has-scrolling-region>
 
-        <app-header slot="header" condenses reveals effects="waterfall">
+        <app-header slot="header" condenses effects="waterfall">
           <app-toolbar>
             <paper-icon-button icon="my-icons:menu" drawer-toggle></paper-icon-button>
             <div main-title>Authentication and session</div>
-            <a name="register-login" href="/register-login" hidden$="[[storedUser.loggedin]]">Log In</a>
+            <span class="flex"></span>
+            <div hidden$="[[storedUser.loggedin]]">
+              <a name="register-login" href="/register-login">Log-In</a>
+            </div>
             <div hidden$="[[!storedUser.loggedin]]">
               <span class="greeting">Hi [[storedUser.name]]!</span>
               <log-out stored-user="{{storedUser}}" link></log-out>
